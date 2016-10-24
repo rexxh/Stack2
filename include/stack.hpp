@@ -25,17 +25,6 @@ auto swap(allocator & obj) ->void;
 auto operator = (const allocator &)->allocator & = delete;
 };
 
- template <typename T>
-stack<T>::stack(size_t size) : allocator<T>(size){};
-
-template <typename T>
-stack<T>::stack(const stack& obj) : allocator<T>(obj.array_size_){
-for (size_t i = 0; i < obj.count_; i++) {
-construct(allocator<T>::array_ + i, obj.array_[i]);
-}
-	allocator<T>::count_ = obj.count_;
-};
-
 template <typename T1, typename T2>
 void construct(T1 * ptr, T2 const & value) {
 new (ptr) T1 (value);
