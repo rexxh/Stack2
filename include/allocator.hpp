@@ -32,12 +32,12 @@ new (ptr) T1 (value);
 }
 
 template <typename T>
-void destroy(T * ptr) noexcept {
+void destroy(T * ptr){
 ptr->~T();
 }
 
 template <typename FwdIter>
-void destroy(FwdIter first, FwdIter last) noexcept
+void destroy(FwdIter first, FwdIter last) 
 {
 for (; first != last; ++first) 
 {
@@ -54,7 +54,7 @@ std::swap(count_, other.count_);
 }
 
 template<typename T>
-allocator<T>::~allocator() /*noexcept*/
+allocator<T>::~allocator() 
 {
-operator delete(array_); // 
+operator delete(array_); 
 }
