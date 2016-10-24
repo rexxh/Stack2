@@ -39,10 +39,18 @@ stack<T>& operator=(const stack<T> &); /* strong */
 auto operator==(const stack & obj) const -> bool; /* strong */
 bool empty() const; /* noexcept */
 ~stack(); /* noexcept */
-};
+}
 
 template <typename T>
-stack<T>::stack() : allocator<T>(size) {}
+stack<T>::stack(size_t size) : allocator<T>(size){};
+
+template <typename T>
+stack<T>::stack(const stack& obj) : allocator<T>(obj.array_size_){
+for (size_t i = 0; i < obj.count_; i++) {
+construct(allocator<T>::array_ + i, obj.array_[i]);
+}
+	allocator<T>::count_ = obj.count_;
+};
 
 template <typename T>
 size_t stack<T>::count() const {
@@ -88,14 +96,6 @@ if (empty())
 throw("the stack is empty");
 }
 return this->array_[this->count_ - 1];
-}
-
-template<typename T>
-stack<T>::stack(const stack & _stack): allocator<T>(_stack.array_size_) /*strong*/
-{
-this->construct(
-this->array_size_ = _stack.size_array_size_;
-this->count_ = _stack.count_;
 }
 
 template <typename T>
