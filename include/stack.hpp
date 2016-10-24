@@ -11,19 +11,6 @@
 
 using namespace std;
 
-template<typename T>
-T* New_n_copy(size_t ar_size, size_t count_, T* ar_){ /* strong */
-T*temp = new T[ar_size];
-try {
-std::copy(ar_, ar_ + count_, temp);
-}
-catch (...) {
-delete[] temp;
-throw;
-}
-return temp;
-}
-
 template <typename T>
 class stack : private allocator<T>
 {
