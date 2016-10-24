@@ -32,7 +32,7 @@ new (ptr) T1 (value);
 }
 
 template <typename T>
-void destroy(T * ptr){
+void destroy(T * ptr){ 
 ptr->~T();
 }
 
