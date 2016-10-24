@@ -25,6 +25,9 @@ auto swap(allocator & obj) ->void;
 auto operator = (const allocator &)->allocator & = delete;
 };
 
+template <typename T>
+allocator<T>::allocator(size_t size) : array_((T*)(operator new(size*sizeof(T)))), array_size_(size), count_(0){};
+
 template <typename T1, typename T2>
 void construct(T1 * ptr, T2 const & value) {
 new (ptr) T1 (value);
