@@ -1,152 +1,133 @@
-#include <iostream>
-#include <stdexcept>
 
-template <typename T>
-auto new_with_copy( T const * src, size_t src_size, size_t dst_size ) -> T *
-{
-    T * dst = new T [ dst_size ];
-    
-    try {
-        std::copy( src, src + src_size, dst );
-    }
-    catch (...) {
-        delete [] dst;
-        throw;
-    }
-    
-    return dst;
+
+
+#pragma once
+#include <stdlib.h>
+#include <iostream>
+#include <string>
+#include "allocator.hpp"
+
+#define MULTIPLIER 2 
+
+using namespace std;
+
+template<typename T>
+T* New_n_copy(size_t ar_size, size_t count_, T* ar_){ /* strong */
+T*temp = new T[ar_size];
+try {
+std::copy(ar_, ar_ + count_, temp);
+}
+catch (...) {
+delete[] temp;
+throw;
+}
+return temp;
 }
 
-
 template <typename T>
-class stack {
+class stack : private allocator<T>
+{
 public:
-    stack();
-    stack( stack const & );
-    ~stack();
-    auto operator =( stack const & ) -> stack &;
-    
-    auto empty() const noexcept -> bool;
-    auto count() const noexcept -> size_t;
-    auto push( T const & value ) -> void;
-    auto pop() -> void;
-    auto top() -> T &;
-    auto top() const -> T const &;
-    
-private:
-    auto throw_is_empty() -> void;
-    auto swap( stack & other ) -> void;
-    
-    T * ptr_;
-    size_t size_;
-    size_t count_;
+stack(size_t size = 0); /* noexcept */
+stack(stack<T> const & obj); /* strong */
+size_t count() const; /* noexcept */
+size_t array_size() const; /* noexcept */
+void push(T const &); /* strong */
+void pop(); /* strong */
+const T& top() const; /* strong */
+stack<T>& operator=(const stack<T> &); /* strong */
+auto operator==(const stack & obj) const -> bool; /* strong */
+bool empty() const; /* noexcept */
+~stack(); /* noexcept */
 };
 
 template <typename T>
-stack<T>::stack() :
-    ptr_( nullptr ),
-    size_( 0 ),
-    count_( 0 )
-{
-    ;
+stack<T>::stack() : allocator<T>(size) {}
+
+template <typename T>
+size_t stack<T>::count() const {
+return this->count_;
 }
 
 template <typename T>
-stack<T>::stack(stack const & other) :
-    ptr_( new_with_copy( other.ptr_, other.count_, other.count_) ),
-    size_( other.count_ ),
-    count_( other.count_ )
-{
-    ;
+stack<T>::~stack(){
+destroy(this->array_, this->array_ + this->count_);
 }
 
 template <typename T>
-auto stack<T>::operator =(stack const & other) -> stack &
-{
-    if ( this != &other ) {
-        this->swap( stack( other ) );
-    };
-    
-    return *this;
+size_t stack<T>::array_size() const {
+return this->array_size_;
 }
 
 template <typename T>
-stack<T>::~stack<T>()
-{
-    delete [] ptr_;
+void stack<T>::push(T const &obj) {
+if (allocator<T>::count_ == allocator<T>::array_size_) {
+size_t array_size = allocator<T>::size_ * MULTIPLIER + (allocator<T>::array_size_ == 0);
+stack<T> temp(array_size);
+while (temp.count() < allocator<T>::count_) temp.push(allocator<T>::array_[temp.count()]);
+this->swap(temp);
+}
+construct(allocator<T>::array_ + allocator<T>::count_, obj);
+++allocator<T>::count_;
 }
 
 template <typename T>
-auto stack<T>::empty() const noexcept -> bool
+void stack<T>::pop() {
+if (empty())
 {
-    return count_ == 0;
+throw("the stack is empty");
+}
+destroy(&(this->array_[this->count_ - 1]));
+this->count_--;
 }
 
 template <typename T>
-auto stack<T>::count() const noexcept -> size_t
+const T& stack<T>::top() {
+if (empty())
 {
-    return count_;
+throw("the stack is empty");
+}
+return this->array_[this->count_ - 1];
+}
+
+template<typename T>
+stack<T>::stack(const stack & _stack): allocator<T>(_stack.array_size_) /*strong*/
+{
+this->construct(
+this->array_size_ = _stack.size_array_size_;
+this->count_ = _stack.count_;
 }
 
 template <typename T>
-auto stack<T>::push(const T & value) -> void
-{
-    if ( count_ == size_ ) {
-        size_t size = size_ * 2 + (size_ == 0);
-        
-        T * ptr = new_with_copy(ptr_, count_, size);
-        
-        delete [] ptr_;
-        ptr_ = ptr;
-        size_ = size;
-        ptr_ = ptr;
-    }
-    
-    ptr_[count_] = value;
-    ++count_;
+stack<T>& stack<T>::operator=(const stack<T> &obj) {
+if (this != &obj){
+stack<T> temp(obj);
+this->swap(temp);
+}
+return *this;
 }
 
 template <typename T>
-auto stack<T>::pop() -> void
+auto stack<T>::operator==(const stack & object) const -> bool
 {
-    if ( count_ == 0 ) {
-        throw_is_empty();
-    }
-    
-    --count_;
+if (count_ != object.count_) {
+throw ("Wrong Dimension");
+}
+for (unsigned int i = 0; i < count_; ++i) {
+if (array_[i] != object.array_[i])
+{
+return false;
+}
+}
+return true;
 }
 
 template <typename T>
-auto stack<T>::top() -> T &
+bool stack<T>::empty() const{
+if (!count_)
 {
-    if ( count_ == 0 ) {
-        throw_is_empty();
-    }
-    
-    return ptr_[count_ - 1];
+return true;
 }
-
-template <typename T>
-auto stack<T>::top() const -> T const &
-{
-    if ( count_ == 0 ) {
-        throw_is_empty();
-    }
-    
-    return ptr_[count_ - 1];
-}
-
-template <typename T>
-auto stack<T>::throw_is_empty() -> void
-{
-    throw std::logic_error("stack is empty");
-}
-
-template <typename T>
-auto stack<T>::swap( stack & other ) -> void
-{
-    std::swap( ptr_, other.ptr_ );
-    std::swap( size_, other.size_ );
-    std::swap( count_, other.count_ );
+return false;
 }
 
