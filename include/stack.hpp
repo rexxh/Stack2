@@ -130,7 +130,7 @@ void stack<T>::pop() {
 }
 
 template <typename T>
-const T& stack<T>::top() {
+const T& stack<T>::top() const{
 	if (empty())
 	{
 		throw("the stack is empty");
@@ -150,11 +150,11 @@ stack<T>& stack<T>::operator=(const stack<T> &obj) {
 template <typename T>
 auto stack<T>::operator==(const stack & object) const -> bool
 {
-	if (count_ != object.count_) {
+	if (this->count_ != object.count_) {
 		throw ("Wrong Dimension");
 	}
-	for (unsigned int i = 0; i < count_; ++i) {
-		if (array_[i] != object.array_[i])
+	for (unsigned int i = 0; i < this->count_; ++i) {
+		if (this->array_[i] != object.array_[i])
 		{
 			return false;
 		}
@@ -164,7 +164,7 @@ auto stack<T>::operator==(const stack & object) const -> bool
 
 template <typename T>
 bool stack<T>::empty() const{
-	if (!count_)
+	if (!this->count_)
 	{
 		return true;
 	}
