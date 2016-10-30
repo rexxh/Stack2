@@ -7,7 +7,7 @@
 
 #define MULTIPLIER 2 
 
-using namespace std;
+//using namespace std;
 
 
 
