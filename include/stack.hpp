@@ -1,6 +1,5 @@
-
-
-
+#ifndef stack_hpp
+#define stack_hpp
 #pragma once
 #include <stdlib.h>
 #include <iostream>
@@ -168,4 +167,6 @@ return true;
 }
 return false;
 }
+
+#endif
 
