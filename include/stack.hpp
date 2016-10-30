@@ -1,8 +1,7 @@
-#include "stdafx.h"
 #ifndef stack_hpp
 #define stack_hpp
 #pragma once
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <iostream>
 #include <string>
 
