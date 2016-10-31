@@ -94,17 +94,15 @@ stack<T>::stack(const stack& obj) : allocator<T>(obj.array_size_){
 
 template <typename T>
 size_t stack<T>::count() const {
-	return this->count_;
+	return allocator<T>::count_;
 }
 
 template <typename T>
-stack<T>::~stack(){
-	destroy(this->array_, this->array_ + this->count_);
-}
+stack<T>::~stack(){};
 
 template <typename T>
 size_t stack<T>::array_size() const {
-	return this->array_size_;
+	return allocator<T>::array_size_;
 }
 
 template <typename T>
@@ -113,7 +111,7 @@ void stack<T>::push(T const &obj) {
 		size_t array_size = allocator<T>::array_size_ * MULTIPLIER + (allocator<T>::array_size_ == 0);
 		stack<T> temp(array_size);
 		while (temp.count() < allocator<T>::count_) temp.push(allocator<T>::array_[temp.count()]);
-		this->swap(temp);
+		allocator<T>::swap(temp);
 	}
 	construct(allocator<T>::array_ + allocator<T>::count_, obj);
 	++allocator<T>::count_;
@@ -125,8 +123,8 @@ void stack<T>::pop() {
 	{
 		throw("the stack is empty");
 	}
-	destroy(&(this->array_[this->count_ - 1]));
-	this->count_--;
+	destroy(&(allocator<T>::array_[allocator<T>::count_ - 1]));
+	allocator<T>::count_--;
 }
 
 template <typename T>
@@ -135,14 +133,14 @@ const T& stack<T>::top() const{
 	{
 		throw("the stack is empty");
 	}
-	return this->array_[this->count_ - 1];
+	return allocator<T>::array_[allocator<T>::count_ - 1];
 }
 
 template <typename T>
 stack<T>& stack<T>::operator=(const stack<T> &obj) {
 	if (this != &obj){
 		stack<T> temp(obj);
-		this->swap(temp);
+		allocator<T>::swap(temp);
 	}
 	return *this;
 }
@@ -150,11 +148,11 @@ stack<T>& stack<T>::operator=(const stack<T> &obj) {
 template <typename T>
 auto stack<T>::operator==(const stack & object) const -> bool
 {
-	if (this->count_ != object.count_) {
+	if (allocator<T>::count_ != object.count_) {
 		throw ("Wrong Dimension");
 	}
 	for (unsigned int i = 0; i < this->count_; ++i) {
-		if (this->array_[i] != object.array_[i])
+		if (allocator<T>::array_[i] != object.array_[i])
 		{
 			return false;
 		}
@@ -164,7 +162,7 @@ auto stack<T>::operator==(const stack & object) const -> bool
 
 template <typename T>
 bool stack<T>::empty() const{
-	if (!this->count_)
+	if (allocator<T>::count_)
 	{
 		return true;
 	}
