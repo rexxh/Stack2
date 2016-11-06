@@ -162,7 +162,7 @@ auto stack<T>::operator==(const stack & object) const -> bool
 
 template <typename T>
 bool stack<T>::empty() const{
-	if (allocator<T>::count_)
+	if (!allocator<T>::count_)
 	{
 		return true;
 	}
