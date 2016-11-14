@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include MULTIPLIER = 2
 
 class bitset
 {
