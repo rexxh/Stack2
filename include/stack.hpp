@@ -44,7 +44,7 @@ auto bitset::reset(size_t index)->void {
 }
 
 auto bitset::test(size_t index)->bool { 
-	if (index >= 0 && index < size_) return !ptr_[index]; 
+	if (index >= 0 && index < size_) return ptr_[index]; 
 	else throw("bad_index"); 
 }
 
@@ -66,7 +66,7 @@ public:
 	auto resize() /*strong*/ -> void;
 
 	auto construct(T * ptr, T const & value) /*strong*/ -> void;
-	auto destroy(T * ptr) /*noexcept*/ -> void;
+	auto destroy(T * ptr) /*destroy*/ -> void;
 
 	auto get() /*noexcept*/ -> T *;
 	auto get() const /*noexcept*/ -> T const *;
@@ -76,7 +76,7 @@ public:
 	auto empty() const /*noexcept*/ -> bool;
 	auto swap(allocator & other) /*noexcept*/ -> void;
 private:
-	auto destroy(T * first, T * last) /*noexcept*/ -> void;
+	auto destroy(T * first, T * last) /*strong*/ -> void;
 
 	T * ptr_;
 	size_t size_;
@@ -122,8 +122,13 @@ auto allocator<T>::construct(T * ptr, T const & value)->void{
 }
 
 template<typename T>
-auto allocator<T>::destroy(T* ptr)->void{ if (!map_->test(ptr-ptr_)&&ptr>=ptr_&&ptr<=ptr_+this->count())
-	{ptr->~T(); map_->reset(ptr - ptr_); }
+auto allocator<T>::destroy(T* ptr)->void{ 
+	if (ptr < ptr_ || ptr >= ptr_ + size_) 
+	{
+ 		throw("bad_index");
+ 	}
+		ptr->~T(); 
+		map_->reset(ptr - ptr_); 
 }
 
 template<typename T>
@@ -143,10 +148,9 @@ auto allocator<T>::empty() const -> bool { return (map_->counter() == 0); }
 
 template<typename T>
 auto allocator<T>::destroy(T * first, T * last)->void{
-	if(first>=ptr_&&last<=ptr_+this->count())
 		for (; first != last; ++first) {
 		destroy(&*first);
-	}
+		}
 }
 
 template<typename T>
