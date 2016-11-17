@@ -88,7 +88,9 @@ allocator<T>::allocator(size_t size) : ptr_((T*)operator new(size*sizeof(T))), s
 
 template<typename T>
 allocator<T>::allocator(allocator const& other) : allocator<T>(other.size_) {
-	for (size_t i=0; i < size_; i++) construct(ptr_ + i, other.ptr_[i]); 
+	for (size_t i=0; i < size_; i++) {
+		construct(ptr_ + i, other.ptr_[i]); 
+	}
 }
 
 template<typename T>
