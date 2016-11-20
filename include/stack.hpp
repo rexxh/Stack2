@@ -92,9 +92,10 @@ allocator<T>::allocator(allocator const& other) {
 	for (size_t i=0; i < temp.size_; i++) {
 		construct(temp.ptr_ + i, other.ptr_[i]); 
 	}
-this->swap(temp);
-	//for (size_t i= 0; i < size_; i++) {
-		//construct(ptr_ + i, other.ptr_[i]); }
+	allocator<T>(other.size_);
+	this->swap(temp);
+	//for (size_t i= 0; i < other.size_; i++) {
+	//	construct(ptr_ + i, other.ptr_[i]); }
 }
 
 template<typename T>
