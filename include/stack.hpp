@@ -95,7 +95,7 @@ allocator<T>::allocator(allocator const& other) : allocator<T>(other.size_) {
 	//this->swap(temp);
 	for (size_t i= 0; i < size_; i++) {
 		construct(ptr_ + i, other.ptr_[i]); }
-	}
+	
 		
 }
 
