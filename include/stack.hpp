@@ -218,10 +218,8 @@ auto stack<T>::pop()->void{
 
 template<typename T>
 auto stack<T>::top()->T& {
-	if (this->count() > 0) {
-		this->throw_is_empty(); 
-	}
-	return(*(allocator_.get() + this->count() - 1));
+	if (this->count() > 0) return(*(allocator_.get() + this->count() - 1));
+	else this->throw_is_empty();
 }
 
 template<typename T>
