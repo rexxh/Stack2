@@ -34,17 +34,17 @@ private:
 bitset::bitset(size_t size) : ptr_(std::make_unique<bool[]>(size)), size_(size), counter_(0){}
 
 auto bitset::set(size_t index)->void { 
-	if (index >= 0 && index < size_) { ptr_[index] = true; ++counter_; }
+	if (index < size_) { ptr_[index] = true; ++counter_; }
 	else throw("bad_index");
 }
 
 auto bitset::reset(size_t index)->void { 
-	if (index >= 0 && index < size_) { ptr_[index] = false; --counter_; } 
+	if (index < size_) { ptr_[index] = false; --counter_; } 
 	else throw("bad_index"); 
 }
 
 auto bitset::test(size_t index)->bool { 
-	if (index >= 0 && index < size_) return ptr_[index]; 
+	if (index < size_) return ptr_[index]; 
 	else throw("bad_index"); 
 }
 
@@ -89,7 +89,7 @@ allocator<T>::allocator(size_t size) : ptr_(static_cast<T *>(size == 0 ? nullptr
 template<typename T>
 allocator<T>::allocator(allocator const& other) {
 	allocator<T> temp (other.size_);
-for (size_t i=0; i < size_; i++) {
+	for (size_t i=0; i < size_; i++) {
 		construct(temp.ptr_ + i, other.ptr_[i]); 
 	}
 this->swap(temp);
@@ -218,8 +218,10 @@ auto stack<T>::pop()->void{
 
 template<typename T>
 auto stack<T>::top()->T& {
-	if (this->count() > 0) return(*(allocator_.get() + this->count() - 1));
-	else this->throw_is_empty();
+	if (this->count() > 0) {
+		this->throw_is_empty(); 
+	}
+	return(*(allocator_.get() + this->count() - 1));
 }
 
 template<typename T>
