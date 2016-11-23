@@ -90,7 +90,7 @@ allocator<T>::allocator(size_t size) : ptr_(static_cast<T *>(size == 0 ? nullptr
 template<typename T>
 allocator<T>::allocator(allocator const& other) : allocator<T>(other.size_) {
 	for (size_t i= 0; i < size_; i++) {
-		if (other.test(i)) {
+		if (other.map_->test(i)) {
 		construct(ptr_ + i, other.ptr_[i]); 
 		}
 	}	
