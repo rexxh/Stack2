@@ -5,7 +5,8 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#define MULTIPLIER 2
+
+const int MULTIPLIER = 2;
 
 class bitset
 {
@@ -88,15 +89,11 @@ allocator<T>::allocator(size_t size) : ptr_(static_cast<T *>(size == 0 ? nullptr
 
 template<typename T>
 allocator<T>::allocator(allocator const& other) : allocator<T>(other.size_) {
-	allocator<T> temp (other.size_);
-	//for (size_t i=0; i < temp.size_; i++) {
-	//	construct(temp.ptr_ + i, other.ptr_[i]); 
-	//}
-	//this->swap(temp);
 	for (size_t i= 0; i < size_; i++) {
-		construct(ptr_ + i, other.ptr_[i]); }
-	
-		
+		if (other.test(t)) {
+		construct(ptr_ + i, other.ptr_[i]); 
+		}
+	}	
 }
 
 template<typename T>
