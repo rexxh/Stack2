@@ -1,78 +1,53 @@
-#include <sort.hpp>
+#include <stack.hpp>
 #include <catch.hpp>
 #include <iostream>
-#include <string>
-#include <iostream>
-#include <fstream>
-
 using namespace std;
 
-SCENARIO("8mb", "[8mb]")
-{
-  Sort other("8mb", "out_8", 1);
-  bool x = true;
-  std::ifstream f1("out_8"), f2("out8");
-  man m1, m2;
-  while(!f2.eof() && !f1.eof())
-  {
-    if((f1>>st1)&&(f2>>st2))
-    {
-      if(m1.name!=m2.name)
-      {
-        x=false;
-        break;
-      }
-    }
-    else break;
-  }
-  f1.close();
-  f2.close();
-  REQUIRE(x);
+SCENARIO("count", "[count]"){
+  stack<int> s;
+  s.push(1);
+  REQUIRE(s.count()==1);
 }
 
-SCENARIO("15mb", "[15mb]")
-{
-  Sort other("15mb", "out_15", 4);
-  bool x = true;
-  std::ifstream f1("out_15"), f2("out15");
-  man m1, m2;
-  while(!f2.eof() && !f1.eof())
-  {
-    if((f1>>st1)&&(f2>>st2))
-    {
-      if(m1.name!=m2.name)
-      {
-        x=false;
-        break;
-      }
-    }
-    else break;
-  }
-  f1.close();
-  f2.close();
-  REQUIRE(x);
+SCENARIO("push", "[push]"){
+  stack<int> s;
+  s.push(1);
+  REQUIRE(s.count()==1);
+  REQUIRE(s.top()==1);
 }
 
-SCENARIO("32mb", "[32mb]")
-{
-  Sort other("32mb", "out_32", 17);
-  bool x = true;
-  std::ifstream f1("out_32"), f2("out32");
-  man m1, m2;
-  while(!f2.eof() && !f1.eof())
-  {
-    if((f1>>st1)&&(f2>>st2))
-    {
-      if(m1.name!=m2.name)
-      {
-        x=false;
-        break;
-      }
-    }
-    else break;
-  }
-  f1.close();
-  f2.close();
-  REQUIRE(x);
+SCENARIO("pop", "[pop]"){
+  stack<int> s;
+  s.push(1); s.pop();
+  REQUIRE(s.count()==0);
 }
 
+SCENARIO("prisv", "[prisv]"){
+  stack<int> s;
+  s.push(1);
+  stack<int> s2;
+  s2=s;
+  REQUIRE(s.count()==1);
+  REQUIRE(s.top()==1);
+}
+
+SCENARIO("cop", "[cop]"){
+  stack<int> s;
+  s.push(1);
+  stack<int> s2=s;
+  REQUIRE(s2.count()==1);
+  REQUIRE(s2.top()==1);
+}
+
+SCENARIO("top", "[top]"){
+  stack<int> s;
+  s.push(1);
+  REQUIRE(s.top()==1);
+}
+
+SCENARIO("empty", "[empty]"){
+  stack<int> s1, s2;
+  s1.push(1);
+  REQUIRE(!s1.empty());
+  REQUIRE(s2.empty());
+}
