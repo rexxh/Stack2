@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <thread>
+#include <mutex>
 #define MULTIPLIER 2
 
 class bitset
