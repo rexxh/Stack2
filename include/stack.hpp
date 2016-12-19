@@ -1,12 +1,14 @@
 #ifndef stack_hpp
 #define stack_hpp
 #pragma once
+//#include <stdlib.h>
 #include <iostream>
 #include <string>
 #include <memory>
 #include <thread>
 #include <mutex>
-#define MULTIPLIER 2
+
+const int MULTIPLIER = 2;
 
 class bitset
 {
@@ -45,7 +47,7 @@ auto bitset::reset(size_t index)->void {
 }
 
 auto bitset::test(size_t index)->bool { 
-	if (index < size_) return !ptr_[index]; 
+	if (index < size_) return ptr_[index]; 
 	else throw("bad_index"); 
 }
 
@@ -67,7 +69,7 @@ public:
 	auto resize() /*strong*/ -> void;
 
 	auto construct(T * ptr, T const & value) /*strong*/ -> void;
-	auto destroy(T * ptr) /*noexcept*/ -> void;
+	auto destroy(T * ptr) /*destroy*/ -> void;
 
 	auto get() /*noexcept*/ -> T *;
 	auto get() const /*noexcept*/ -> T const *;
@@ -77,7 +79,7 @@ public:
 	auto empty() const /*noexcept*/ -> bool;
 	auto swap(allocator & other) /*noexcept*/ -> void;
 private:
-	auto destroy(T * first, T * last) /*noexcept*/ -> void;
+	auto destroy(T * first, T * last) /*strong*/ -> void;
 
 	T * ptr_;
 	size_t size_;
@@ -85,11 +87,15 @@ private:
 };
 
 template<typename T>
-allocator<T>::allocator(size_t size) : ptr_((T*)operator new(size*sizeof(T))), size_(size), map_(std::make_unique<bitset>(size)) {}
+allocator<T>::allocator(size_t size) : ptr_(static_cast<T *>(size == 0 ? nullptr : operator new(size * sizeof(T)))), size_(size), map_(std::make_unique<bitset>(size)) {}
 
 template<typename T>
 allocator<T>::allocator(allocator const& other) : allocator<T>(other.size_) {
-	for (size_t i=0; i < size_; i++) construct(ptr_ + i, other.ptr_[i]); 
+	for (size_t i= 0; i < size_; i++) {
+		if (other.map_->test(i)) {
+		construct(ptr_ + i, other.ptr_[i]); 
+		}
+	}	
 }
 
 template<typename T>
@@ -123,8 +129,13 @@ auto allocator<T>::construct(T * ptr, T const & value)->void{
 }
 
 template<typename T>
-auto allocator<T>::destroy(T* ptr)->void{ if (!map_->test(ptr-ptr_)&&ptr>=ptr_&&ptr<=ptr_+this->count())
-	{ptr->~T(); map_->reset(ptr - ptr_); }
+auto allocator<T>::destroy(T* ptr)->void{ 
+	if (ptr < ptr_ || ptr >= ptr_ + size_) 
+	{
+ 		throw("bad_index");
+ 	}
+		ptr->~T(); 
+		map_->reset(ptr - ptr_); 
 }
 
 template<typename T>
@@ -144,10 +155,9 @@ auto allocator<T>::empty() const -> bool { return (map_->counter() == 0); }
 
 template<typename T>
 auto allocator<T>::destroy(T * first, T * last)->void{
-	if(first>=ptr_&&last<=ptr_+this->count())
 		for (; first != last; ++first) {
 		destroy(&*first);
-	}
+		}
 }
 
 template<typename T>
@@ -164,7 +174,6 @@ class stack {
 public:
 	explicit
 	stack(size_t size = 0);
-	stack(stack const & other);
 	auto operator =(stack const & other) /*strong*/ -> stack &;
 
 	auto empty() const /*noexcept*/ -> bool;
@@ -177,7 +186,7 @@ public:
 
 private:
 	allocator<T> allocator_;
-        mutable std::mutex mut;
+
 	auto throw_is_empty()/*strong*/ const -> void;
 };
 
@@ -203,12 +212,12 @@ auto stack<T>::operator =(stack const & other)-> stack &{
 }
 
 template<typename T>
-auto stack<T>::empty() const ->bool{
+auto stack<T>::empty() const ->bool{ 
 	std::lock_guard<std::mutex> lg(mut);
 	return allocator_.empty(); }
 
 template<typename T>
-auto stack<T>::count()const->size_t{ 
+auto stack<T>::count()const->size_t{
 	std::lock_guard<std::mutex> lg(mut);
 	return allocator_.count(); }
 
