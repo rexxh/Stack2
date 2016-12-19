@@ -177,7 +177,7 @@ public:
 
 private:
 	allocator<T> allocator_;
-        std::mutex mut;
+        mutable std::mutex mut;
 	auto throw_is_empty()/*strong*/ const -> void;
 };
 
@@ -188,15 +188,15 @@ template <typename T>
 stack<T>::stack(stack const & other) : allocator_(0) 
 {
 	std::lock_guard<std::mutex> lg(other.mut);
-	allocate.swap(allocator<T>(other.allocator_));
+	allocator_.swap(allocator<T>(other.allocator_));
 }
 
 template<typename T>
 auto stack<T>::operator =(stack const & other)-> stack &{ 
 	if (this != &other) {
-		std::lock(mut, tmp.mut);
+		std::lock(mut, other.mut);
 		std::lock_guard<std::mutex> lg1(mut, std::adopt_lock);
-		std::lock_guard<std::mutex> lg2(tmp.mut, std::adopt_lock);
+		std::lock_guard<std::mutex> lg2(other.mut, std::adopt_lock);
 		(allocator<T>(other.allocator_)).swap(allocator_);
 	}
 	return *this;
