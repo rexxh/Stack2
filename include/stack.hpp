@@ -174,7 +174,7 @@ class stack {
 public:
 	explicit
 	stack(size_t size = 0);
-	stack<T>::stack(stack const & other); /*strong*/
+	stack(stack const & other); /*strong*/
 	auto operator =(stack const & other) /*strong*/ -> stack &;
 
 	auto empty() const /*noexcept*/ -> bool;
