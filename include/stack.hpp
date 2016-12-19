@@ -186,7 +186,7 @@ public:
 
 private:
 	allocator<T> allocator_;
-
+        mutable std::mutex mut;
 	auto throw_is_empty()/*strong*/ const -> void;
 };
 
