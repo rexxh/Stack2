@@ -1,6 +1,8 @@
 #include <stack.hpp>
 #include <catch.hpp>
 #include <iostream>
+#include <thread>
+#include<mutex>
 using namespace std;
 
 SCENARIO("count", "[count]"){
