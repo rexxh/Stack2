@@ -164,6 +164,7 @@ class stack {
 public:
 	explicit
 	stack(size_t size = 0);
+	stack(stack const & other);
 	auto operator =(stack const & other) /*strong*/ -> stack &;
 
 	auto empty() const /*noexcept*/ -> bool;
@@ -176,47 +177,65 @@ public:
 
 private:
 	allocator<T> allocator_;
-
+        std::mutex mut;
 	auto throw_is_empty()/*strong*/ const -> void;
 };
 
 template<typename T>
 stack<T>::stack(size_t size) : allocator_(size){}
 
+template <typename T>
+stack<T>::stack(stack const & other) : allocator_(0) 
+{
+	std::lock_guard<std::mutex> lg(other.mut);
+	allocate.swap(allocator<T>(other.allocator_));
+}
+
 template<typename T>
 auto stack<T>::operator =(stack const & other)-> stack &{ 
 	if (this != &other) {
+		std::lock(mut, tmp.mut);
+		std::lock_guard<std::mutex> lg1(mut, std::adopt_lock);
+		std::lock_guard<std::mutex> lg2(tmp.mut, std::adopt_lock);
 		(allocator<T>(other.allocator_)).swap(allocator_);
 	}
 	return *this;
 }
 
 template<typename T>
-auto stack<T>::empty() const ->bool{ return allocator_.empty(); }
+auto stack<T>::empty() const ->bool{
+	std::lock_guard<std::mutex> lg(mut);
+	return allocator_.empty(); }
 
 template<typename T>
-auto stack<T>::count()const->size_t{ return allocator_.count(); }
+auto stack<T>::count()const->size_t{ 
+	std::lock_guard<std::mutex> lg(mut);
+	return allocator_.count(); }
 
 template<typename T>
 auto stack<T>::push(T const & value)->void{
+	std::lock_guard<std::mutex> lg(mut);
 	if (allocator_.full()) allocator_.resize(); 
 	allocator_.construct(allocator_.get() + this->count(), value);
 }
 
 template<typename T>
 auto stack<T>::pop()->void{
+	std::lock_guard<std::mutex> lg(mut);
 	if (this->count() > 0) allocator_.destroy(allocator_.get() + (this->count()-1));
 	else this->throw_is_empty();
 }
 
 template<typename T>
 auto stack<T>::top()->T& {
+	std::lock_guard<std::mutex> lg(mut);
 	if (this->count() > 0) return(*(allocator_.get() + this->count() - 1));
 	else this->throw_is_empty();
 }
 
 template<typename T>
 auto stack<T>::top()const->T const & {
+	std::lock_guard<std::mutex> lg(mut);
 	if (this->count() > 0) return(*(allocator_.get() + this->count() - 1));
 	else this->throw_is_empty();
 }
