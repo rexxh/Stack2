@@ -226,27 +226,27 @@ template<typename T>
 auto stack<T>::push(T const & value)->void{
 	std::lock_guard<std::mutex> lg(mut);
 	if (allocator_.full()) allocator_.resize(); 
-	allocator_.construct(allocator_.get() + this->count(), value);
+	allocator_.construct(allocator_.get() + allocator_.count(), value);
 }
 
 template<typename T>
 auto stack<T>::pop()->void{
 	std::lock_guard<std::mutex> lg(mut);
-	if (this->count() > 0) allocator_.destroy(allocator_.get() + (this->count()-1));
+	if (allocator_.count() > 0) allocator_.destroy(allocator_.get() + (allocator_.count()-1));
 	else this->throw_is_empty();
 }
 
 template<typename T>
 auto stack<T>::top()->T& {
 	std::lock_guard<std::mutex> lg(mut);
-	if (this->count() > 0) return(*(allocator_.get() + this->count() - 1));
+	if (allocator_.count() > 0) return(*(allocator_.get() + allocator_.count() - 1));
 	else this->throw_is_empty();
 }
 
 template<typename T>
 auto stack<T>::top()const->T const & {
 	std::lock_guard<std::mutex> lg(mut);
-	if (this->count() > 0) return(*(allocator_.get() + this->count() - 1));
+	if (allocator_.count() > 0) return(*(allocator_.get() + allocator_.count() - 1));
 	else this->throw_is_empty();
 }
 
