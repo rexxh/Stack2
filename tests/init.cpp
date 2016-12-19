@@ -2,7 +2,7 @@
 #include <catch.hpp>
 #include <iostream>
 #include <thread>
-#include<mutex>
+#include <mutex>
 using namespace std;
 
 SCENARIO("count", "[count]"){
