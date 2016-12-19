@@ -35,17 +35,17 @@ private:
 bitset::bitset(size_t size) : ptr_(std::make_unique<bool[]>(size)), size_(size), counter_(0){}
 
 auto bitset::set(size_t index)->void { 
-	if (index >= 0 && index < size_) { ptr_[index] = true; ++counter_; }
+	if (index < size_) { ptr_[index] = true; ++counter_; }
 	else throw("bad_index");
 }
 
 auto bitset::reset(size_t index)->void { 
-	if (index >= 0 && index < size_) { ptr_[index] = false; --counter_; } 
+	if (index < size_) { ptr_[index] = false; --counter_; } 
 	else throw("bad_index"); 
 }
 
 auto bitset::test(size_t index)->bool { 
-	if (index >= 0 && index < size_) return !ptr_[index]; 
+	if (index < size_) return !ptr_[index]; 
 	else throw("bad_index"); 
 }
 
@@ -182,10 +182,10 @@ private:
 };
 
 template<typename T>
-stack<T>::stack(size_t size) : allocator_(size){}
+stack<T>::stack(size_t size) : allocator_(size), mut() {}
 
 template <typename T>
-stack<T>::stack(stack const & other) : allocator_(0) 
+stack<T>::stack(stack const & other) : allocator_(0), mut() 
 {
 	std::lock_guard<std::mutex> lg(other.mut);
 	allocator_.swap(allocator<T>(other.allocator_));
