@@ -177,7 +177,7 @@ public:
 	stack(stack const & other); /*strong*/
 	auto operator =(stack const & other) /*strong*/ -> stack &;
 
-	auto empty() const /*noexcept*/ -> bool;
+	//auto empty() const /*noexcept*/ -> bool;
 	auto count() const /*noexcept*/ -> size_t;
 
 	auto push(T const & value) /*strong*/ -> void;
@@ -212,10 +212,10 @@ auto stack<T>::operator =(stack const & other)-> stack &{
 	return *this;
 }
 
-template<typename T>
+/*template<typename T>
 auto stack<T>::empty() const ->bool{ 
 	std::lock_guard<std::mutex> lg(mut);
-	return allocator_.empty(); }
+	return allocator_.empty(); }*/
 
 template<typename T>
 auto stack<T>::count()const->size_t{
